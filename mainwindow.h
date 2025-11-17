@@ -6,6 +6,20 @@
 #include <QLabel>
 #include "qcustomplot.h"
 
+// Data structures for time series
+struct TimeSeriesData {
+    QVector<double> time;
+    QVector<double> series1;
+    QVector<double> series2;
+    QVector<double> series3;
+};
+
+struct ObjectData {
+    TimeSeriesData metricA;
+    TimeSeriesData metricB;
+    TimeSeriesData metricC;
+};
+
 class MainWindow : public QWidget
 {
     Q_OBJECT
@@ -26,10 +40,8 @@ private:
     QCustomPlot *plotPressure;
 
     // Data generation
-    void generateFakeData(int objectId, QVector<double> &time,
-                         QVector<double> &temp1, QVector<double> &temp2, QVector<double> &temp3,
-                         QVector<double> &hum1, QVector<double> &hum2, QVector<double> &hum3,
-                         QVector<double> &press1, QVector<double> &press2, QVector<double> &press3);
+    ObjectData generateFakeData(int objectId);
+    void updatePlot(QCustomPlot *plot, const TimeSeriesData &data);
 
     // Setup methods
     void setupUI();

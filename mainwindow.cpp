@@ -125,79 +125,83 @@ void MainWindow::setupPlots()
     plotPressure->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
 }
 
-void MainWindow::generateFakeData(int objectId, QVector<double> &time,
-                                  QVector<double> &temp1, QVector<double> &temp2, QVector<double> &temp3,
-                                  QVector<double> &hum1, QVector<double> &hum2, QVector<double> &hum3,
-                                  QVector<double> &press1, QVector<double> &press2, QVector<double> &press3)
+ObjectData MainWindow::generateFakeData(int objectId)
 {
+    ObjectData data;
     const int numPoints = 100;
-    time.resize(numPoints);
-    temp1.resize(numPoints);
-    temp2.resize(numPoints);
-    temp3.resize(numPoints);
-    hum1.resize(numPoints);
-    hum2.resize(numPoints);
-    hum3.resize(numPoints);
-    press1.resize(numPoints);
-    press2.resize(numPoints);
-    press3.resize(numPoints);
+
+    // Resize all vectors
+    data.metricA.time.resize(numPoints);
+    data.metricA.series1.resize(numPoints);
+    data.metricA.series2.resize(numPoints);
+    data.metricA.series3.resize(numPoints);
+
+    data.metricB.time.resize(numPoints);
+    data.metricB.series1.resize(numPoints);
+    data.metricB.series2.resize(numPoints);
+    data.metricB.series3.resize(numPoints);
+
+    data.metricC.time.resize(numPoints);
+    data.metricC.series1.resize(numPoints);
+    data.metricC.series2.resize(numPoints);
+    data.metricC.series3.resize(numPoints);
 
     // Use objectId as seed for variation
-    double tempBase = 20.0 + (objectId % 10) * 2.0;      // Base temperature varies by object
-    double humidBase = 50.0 + (objectId % 10) * 3.0;     // Base humidity varies by object
-    double pressBase = 1013.0 + (objectId % 10) * 5.0;   // Base pressure varies by object
+    double metricABase = 20.0 + (objectId % 10) * 2.0;
+    double metricBBase = 50.0 + (objectId % 10) * 3.0;
+    double metricCBase = 1013.0 + (objectId % 10) * 5.0;
 
     for (int i = 0; i < numPoints; ++i)
     {
-        time[i] = i;
+        // Common time axis for all metrics
+        double timeValue = i;
+        data.metricA.time[i] = timeValue;
+        data.metricB.time[i] = timeValue;
+        data.metricC.time[i] = timeValue;
 
-        // Generate temperature series with different patterns
-        temp1[i] = tempBase + 5.0 * qSin(i * 0.1 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        temp2[i] = tempBase + 3.0 + 6.0 * qSin(i * 0.12 + objectId + 1.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        temp3[i] = tempBase - 2.0 + 4.0 * qSin(i * 0.08 + objectId + 2.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        // Generate Metric A series with different patterns
+        data.metricA.series1[i] = metricABase + 5.0 * qSin(i * 0.1 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        data.metricA.series2[i] = metricABase + 3.0 + 6.0 * qSin(i * 0.12 + objectId + 1.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        data.metricA.series3[i] = metricABase - 2.0 + 4.0 * qSin(i * 0.08 + objectId + 2.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
 
-        // Generate humidity series with different patterns
-        hum1[i] = humidBase + 10.0 * qCos(i * 0.15 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        hum2[i] = humidBase + 5.0 + 8.0 * qCos(i * 0.18 + objectId + 1.5) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        hum3[i] = humidBase - 3.0 + 12.0 * qCos(i * 0.12 + objectId + 2.5) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        // Generate Metric B series with different patterns
+        data.metricB.series1[i] = metricBBase + 10.0 * qCos(i * 0.15 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        data.metricB.series2[i] = metricBBase + 5.0 + 8.0 * qCos(i * 0.18 + objectId + 1.5) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        data.metricB.series3[i] = metricBBase - 3.0 + 12.0 * qCos(i * 0.12 + objectId + 2.5) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
 
-        // Generate pressure series with different patterns
-        press1[i] = pressBase + 8.0 * qSin(i * 0.05 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        press2[i] = pressBase + 10.0 + 6.0 * qSin(i * 0.06 + objectId + 1.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        press3[i] = pressBase - 5.0 + 7.0 * qSin(i * 0.04 + objectId + 2.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        // Generate Metric C series with different patterns
+        data.metricC.series1[i] = metricCBase + 8.0 * qSin(i * 0.05 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        data.metricC.series2[i] = metricCBase + 10.0 + 6.0 * qSin(i * 0.06 + objectId + 1.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        data.metricC.series3[i] = metricCBase - 5.0 + 7.0 * qSin(i * 0.04 + objectId + 2.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
     }
+
+    return data;
+}
+
+void MainWindow::updatePlot(QCustomPlot *plot, const TimeSeriesData &data)
+{
+    // Update all 3 series
+    plot->graph(0)->setData(data.time, data.series1);
+    plot->graph(1)->setData(data.time, data.series2);
+    plot->graph(2)->setData(data.time, data.series3);
+
+    // Update axis ranges
+    plot->xAxis->setRange(0, data.time.size());
+    plot->yAxis->rescale();
+
+    // Replot
+    plot->replot();
 }
 
 void MainWindow::updateGraphs(int objectId)
 {
-    QVector<double> time, temp1, temp2, temp3, hum1, hum2, hum3, press1, press2, press3;
-
     // Generate fake data for the selected object
-    generateFakeData(objectId, time, temp1, temp2, temp3, hum1, hum2, hum3, press1, press2, press3);
+    ObjectData data = generateFakeData(objectId);
 
-    // Update Temperature Graphs (3 series)
-    plotTemperature->graph(0)->setData(time, temp1);  // Green series
-    plotTemperature->graph(1)->setData(time, temp2);  // Yellow series
-    plotTemperature->graph(2)->setData(time, temp3);  // Red series
-    plotTemperature->xAxis->setRange(0, time.size());
-    plotTemperature->yAxis->rescale();
-    plotTemperature->replot();
-
-    // Update Humidity Graphs (3 series)
-    plotHumidity->graph(0)->setData(time, hum1);  // Green series
-    plotHumidity->graph(1)->setData(time, hum2);  // Yellow series
-    plotHumidity->graph(2)->setData(time, hum3);  // Red series
-    plotHumidity->xAxis->setRange(0, time.size());
-    plotHumidity->yAxis->rescale();
-    plotHumidity->replot();
-
-    // Update Pressure Graphs (3 series)
-    plotPressure->graph(0)->setData(time, press1);  // Green series
-    plotPressure->graph(1)->setData(time, press2);  // Yellow series
-    plotPressure->graph(2)->setData(time, press3);  // Red series
-    plotPressure->xAxis->setRange(0, time.size());
-    plotPressure->yAxis->rescale();
-    plotPressure->replot();
+    // Update all plots using the structured data
+    updatePlot(plotTemperature, data.metricA);
+    updatePlot(plotHumidity, data.metricB);
+    updatePlot(plotPressure, data.metricC);
 }
 
 void MainWindow::onObjectIdChanged(int objectId)
