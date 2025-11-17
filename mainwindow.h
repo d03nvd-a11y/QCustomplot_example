@@ -7,11 +7,15 @@
 #include "qcustomplot.h"
 
 // Data structures for time series
+struct DataPoint {
+    double time;
+    double series1Value;
+    double series2Value;
+    double series3Value;
+};
+
 struct TimeSeriesData {
-    QVector<double> time;
-    QVector<double> series1;
-    QVector<double> series2;
-    QVector<double> series3;
+    QVector<DataPoint> dataPoints;
 };
 
 struct ObjectData {

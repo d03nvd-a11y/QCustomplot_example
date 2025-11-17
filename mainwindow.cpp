@@ -130,21 +130,10 @@ ObjectData MainWindow::generateFakeData(int objectId)
     ObjectData data;
     const int numPoints = 100;
 
-    // Resize all vectors
-    data.metricA.time.resize(numPoints);
-    data.metricA.series1.resize(numPoints);
-    data.metricA.series2.resize(numPoints);
-    data.metricA.series3.resize(numPoints);
-
-    data.metricB.time.resize(numPoints);
-    data.metricB.series1.resize(numPoints);
-    data.metricB.series2.resize(numPoints);
-    data.metricB.series3.resize(numPoints);
-
-    data.metricC.time.resize(numPoints);
-    data.metricC.series1.resize(numPoints);
-    data.metricC.series2.resize(numPoints);
-    data.metricC.series3.resize(numPoints);
+    // Resize all dataPoints vectors
+    data.metricA.dataPoints.resize(numPoints);
+    data.metricB.dataPoints.resize(numPoints);
+    data.metricC.dataPoints.resize(numPoints);
 
     // Use objectId as seed for variation
     double metricABase = 20.0 + (objectId % 10) * 2.0;
@@ -153,26 +142,31 @@ ObjectData MainWindow::generateFakeData(int objectId)
 
     for (int i = 0; i < numPoints; ++i)
     {
-        // Common time axis for all metrics
         double timeValue = i;
-        data.metricA.time[i] = timeValue;
-        data.metricB.time[i] = timeValue;
-        data.metricC.time[i] = timeValue;
 
-        // Generate Metric A series with different patterns
-        data.metricA.series1[i] = metricABase + 5.0 * qSin(i * 0.1 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        data.metricA.series2[i] = metricABase + 3.0 + 6.0 * qSin(i * 0.12 + objectId + 1.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        data.metricA.series3[i] = metricABase - 2.0 + 4.0 * qSin(i * 0.08 + objectId + 2.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        // Create Metric A data point
+        DataPoint pointA;
+        pointA.time = timeValue;
+        pointA.series1Value = metricABase + 5.0 * qSin(i * 0.1 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        pointA.series2Value = metricABase + 3.0 + 6.0 * qSin(i * 0.12 + objectId + 1.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        pointA.series3Value = metricABase - 2.0 + 4.0 * qSin(i * 0.08 + objectId + 2.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        data.metricA.dataPoints[i] = pointA;
 
-        // Generate Metric B series with different patterns
-        data.metricB.series1[i] = metricBBase + 10.0 * qCos(i * 0.15 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        data.metricB.series2[i] = metricBBase + 5.0 + 8.0 * qCos(i * 0.18 + objectId + 1.5) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        data.metricB.series3[i] = metricBBase - 3.0 + 12.0 * qCos(i * 0.12 + objectId + 2.5) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        // Create Metric B data point
+        DataPoint pointB;
+        pointB.time = timeValue;
+        pointB.series1Value = metricBBase + 10.0 * qCos(i * 0.15 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        pointB.series2Value = metricBBase + 5.0 + 8.0 * qCos(i * 0.18 + objectId + 1.5) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        pointB.series3Value = metricBBase - 3.0 + 12.0 * qCos(i * 0.12 + objectId + 2.5) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        data.metricB.dataPoints[i] = pointB;
 
-        // Generate Metric C series with different patterns
-        data.metricC.series1[i] = metricCBase + 8.0 * qSin(i * 0.05 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        data.metricC.series2[i] = metricCBase + 10.0 + 6.0 * qSin(i * 0.06 + objectId + 1.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        data.metricC.series3[i] = metricCBase - 5.0 + 7.0 * qSin(i * 0.04 + objectId + 2.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        // Create Metric C data point
+        DataPoint pointC;
+        pointC.time = timeValue;
+        pointC.series1Value = metricCBase + 8.0 * qSin(i * 0.05 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        pointC.series2Value = metricCBase + 10.0 + 6.0 * qSin(i * 0.06 + objectId + 1.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        pointC.series3Value = metricCBase - 5.0 + 7.0 * qSin(i * 0.04 + objectId + 2.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        data.metricC.dataPoints[i] = pointC;
     }
 
     return data;
@@ -180,13 +174,29 @@ ObjectData MainWindow::generateFakeData(int objectId)
 
 void MainWindow::updatePlot(QCustomPlot *plot, const TimeSeriesData &data)
 {
+    // Extract data from DataPoints into separate vectors for QCustomPlot
+    int numPoints = data.dataPoints.size();
+    QVector<double> time(numPoints);
+    QVector<double> series1(numPoints);
+    QVector<double> series2(numPoints);
+    QVector<double> series3(numPoints);
+
+    for (int i = 0; i < numPoints; ++i)
+    {
+        const DataPoint &point = data.dataPoints[i];
+        time[i] = point.time;
+        series1[i] = point.series1Value;
+        series2[i] = point.series2Value;
+        series3[i] = point.series3Value;
+    }
+
     // Update all 3 series
-    plot->graph(0)->setData(data.time, data.series1);
-    plot->graph(1)->setData(data.time, data.series2);
-    plot->graph(2)->setData(data.time, data.series3);
+    plot->graph(0)->setData(time, series1);
+    plot->graph(1)->setData(time, series2);
+    plot->graph(2)->setData(time, series3);
 
     // Update axis ranges
-    plot->xAxis->setRange(0, data.time.size());
+    plot->xAxis->setRange(0, numPoints);
     plot->yAxis->rescale();
 
     // Replot
