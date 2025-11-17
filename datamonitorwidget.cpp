@@ -1,9 +1,7 @@
 #include "datamonitorwidget.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QGroupBox>
 #include <QtMath>
-#include <QDateTime>
 #include <QRandomGenerator>
 
 DataMonitorWidget::DataMonitorWidget(QWidget *parent)
@@ -11,27 +9,25 @@ DataMonitorWidget::DataMonitorWidget(QWidget *parent)
 {
     setupUI();
     setupPlots();
-
-    // Initialize with object ID 1
-    updateGraphs(1);
+    updateGraphs(Config::DEFAULT_OBJECT_ID);
 }
 
 DataMonitorWidget::~DataMonitorWidget()
 {
+    // Qt automatically deletes child widgets
 }
 
 void DataMonitorWidget::setupUI()
 {
-    // Main layout
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
-    // Control panel at the top
+    // Control panel
     QHBoxLayout *controlLayout = new QHBoxLayout();
     objectIdLabel = new QLabel("Select Object ID:", this);
     objectIdSpinBox = new QSpinBox(this);
-    objectIdSpinBox->setMinimum(1);
-    objectIdSpinBox->setMaximum(100);
-    objectIdSpinBox->setValue(1);
+    objectIdSpinBox->setMinimum(Config::MIN_OBJECT_ID);
+    objectIdSpinBox->setMaximum(Config::MAX_OBJECT_ID);
+    objectIdSpinBox->setValue(Config::DEFAULT_OBJECT_ID);
     objectIdSpinBox->setPrefix("Object #");
 
     controlLayout->addWidget(objectIdLabel);
@@ -40,137 +36,131 @@ void DataMonitorWidget::setupUI()
 
     mainLayout->addLayout(controlLayout);
 
-    // Create three plot widgets
-    plotTemperature = new QCustomPlot(this);
-    plotHumidity = new QCustomPlot(this);
-    plotPressure = new QCustomPlot(this);
+    // Create plot widgets
+    plotMetricA = new QCustomPlot(this);
+    plotMetricB = new QCustomPlot(this);
+    plotMetricC = new QCustomPlot(this);
 
-    // Set minimum heights for plots
-    plotTemperature->setMinimumHeight(200);
-    plotHumidity->setMinimumHeight(200);
-    plotPressure->setMinimumHeight(200);
+    plotMetricA->setMinimumHeight(Config::PLOT_MIN_HEIGHT);
+    plotMetricB->setMinimumHeight(Config::PLOT_MIN_HEIGHT);
+    plotMetricC->setMinimumHeight(Config::PLOT_MIN_HEIGHT);
 
-    // Add plots to layout
-    mainLayout->addWidget(plotTemperature);
-    mainLayout->addWidget(plotHumidity);
-    mainLayout->addWidget(plotPressure);
+    mainLayout->addWidget(plotMetricA);
+    mainLayout->addWidget(plotMetricB);
+    mainLayout->addWidget(plotMetricC);
 
     setLayout(mainLayout);
 
-    // Connect spinbox signal
+    // Connect signals
     connect(objectIdSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
             this, &DataMonitorWidget::onObjectIdChanged);
 }
 
 void DataMonitorWidget::setupPlots()
 {
-    // Setup Temperature Plot with 3 series
-    plotTemperature->addGraph(); // Series 1 - Green
-    plotTemperature->graph(0)->setPen(QPen(Qt::green, 2));
-    plotTemperature->graph(0)->setName("Series 1 (Unit A)");
+    const QString unitsA[] = {"Unit A", "Unit B", "Unit C"};
+    const QString unitsB[] = {"Unit D", "Unit E", "Unit F"};
+    const QString unitsC[] = {"Unit G", "Unit H", "Unit I"};
 
-    plotTemperature->addGraph(); // Series 2 - Yellow
-    plotTemperature->graph(1)->setPen(QPen(Qt::yellow, 2));
-    plotTemperature->graph(1)->setName("Series 2 (Unit B)");
-
-    plotTemperature->addGraph(); // Series 3 - Red
-    plotTemperature->graph(2)->setPen(QPen(Qt::red, 2));
-    plotTemperature->graph(2)->setName("Series 3 (Unit C)");
-
-    plotTemperature->xAxis->setLabel("Time");
-    plotTemperature->yAxis->setLabel("Metric A");
-    plotTemperature->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-    plotTemperature->legend->setVisible(true);
-    plotTemperature->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
-    connect(plotTemperature, &QCustomPlot::mousePress, this, &DataMonitorWidget::onPlotClicked);
-
-    // Setup Humidity Plot with 3 series
-    plotHumidity->addGraph(); // Series 1 - Green
-    plotHumidity->graph(0)->setPen(QPen(Qt::green, 2));
-    plotHumidity->graph(0)->setName("Series 1 (Unit D)");
-
-    plotHumidity->addGraph(); // Series 2 - Yellow
-    plotHumidity->graph(1)->setPen(QPen(Qt::yellow, 2));
-    plotHumidity->graph(1)->setName("Series 2 (Unit E)");
-
-    plotHumidity->addGraph(); // Series 3 - Red
-    plotHumidity->graph(2)->setPen(QPen(Qt::red, 2));
-    plotHumidity->graph(2)->setName("Series 3 (Unit F)");
-
-    plotHumidity->xAxis->setLabel("Time");
-    plotHumidity->yAxis->setLabel("Metric B");
-    plotHumidity->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-    plotHumidity->legend->setVisible(true);
-    plotHumidity->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
-    connect(plotHumidity, &QCustomPlot::mousePress, this, &DataMonitorWidget::onPlotClicked);
-
-    // Setup Pressure Plot with 3 series
-    plotPressure->addGraph(); // Series 1 - Green
-    plotPressure->graph(0)->setPen(QPen(Qt::green, 2));
-    plotPressure->graph(0)->setName("Series 1 (Unit G)");
-
-    plotPressure->addGraph(); // Series 2 - Yellow
-    plotPressure->graph(1)->setPen(QPen(Qt::yellow, 2));
-    plotPressure->graph(1)->setName("Series 2 (Unit H)");
-
-    plotPressure->addGraph(); // Series 3 - Red
-    plotPressure->graph(2)->setPen(QPen(Qt::red, 2));
-    plotPressure->graph(2)->setName("Series 3 (Unit I)");
-
-    plotPressure->xAxis->setLabel("Time");
-    plotPressure->yAxis->setLabel("Metric C");
-    plotPressure->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-    plotPressure->legend->setVisible(true);
-    plotPressure->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
-    connect(plotPressure, &QCustomPlot::mousePress, this, &DataMonitorWidget::onPlotClicked);
-
-    // Setup callouts for all plots
-    setupCallouts(plotTemperature, calloutTemperature);
-    setupCallouts(plotHumidity, calloutHumidity);
-    setupCallouts(plotPressure, calloutPressure);
+    setupSinglePlot(plotMetricA, Config::METRIC_LABELS[0], unitsA, calloutMetricA);
+    setupSinglePlot(plotMetricB, Config::METRIC_LABELS[1], unitsB, calloutMetricB);
+    setupSinglePlot(plotMetricC, Config::METRIC_LABELS[2], unitsC, calloutMetricC);
 }
 
-ObjectData DataMonitorWidget::generateFakeData(int objectId)
+void DataMonitorWidget::setupSinglePlot(QCustomPlot *plot, const QString &metricLabel,
+                                         const QString units[], PlotCallout &callout)
+{
+    // Add graphs for each series
+    for (int i = 0; i < Config::NUM_SERIES; ++i) {
+        plot->addGraph();
+        plot->graph(i)->setPen(QPen(Config::SERIES_COLORS[i], Config::LINE_WIDTH));
+        plot->graph(i)->setName(QString("Series %1 (%2)").arg(i + 1).arg(units[i]));
+    }
+
+    // Configure axes and interactions
+    plot->xAxis->setLabel("Time");
+    plot->yAxis->setLabel(metricLabel);
+    plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    plot->legend->setVisible(true);
+    plot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop | Qt::AlignRight);
+
+    // Setup callouts
+    setupCallouts(plot, callout);
+
+    // Connect mouse clicks
+    connect(plot, &QCustomPlot::mousePress, this, &DataMonitorWidget::onPlotClicked);
+}
+
+void DataMonitorWidget::setupCallouts(QCustomPlot *plot, PlotCallout &callout)
+{
+    // Create tracers for each series
+    for (int i = 0; i < Config::NUM_SERIES; ++i) {
+        callout.tracers[i] = createTracer(plot, Config::SERIES_COLORS[i]);
+    }
+
+    // Create text label
+    callout.textLabel = new QCPItemText(plot);
+    callout.textLabel->setPositionAlignment(Qt::AlignTop | Qt::AlignHCenter);
+    callout.textLabel->position->setType(QCPItemPosition::ptPlotCoords);
+    callout.textLabel->setFont(QFont(font().family(), Config::CALLOUT_FONT_SIZE));
+    callout.textLabel->setPen(QPen(Qt::black));
+    callout.textLabel->setBrush(QBrush(QColor(255, 255, 255, Config::CALLOUT_ALPHA)));
+    callout.textLabel->setPadding(QMargins(5, 5, 5, 5));
+    callout.textLabel->setVisible(false);
+}
+
+QCPItemTracer* DataMonitorWidget::createTracer(QCustomPlot *plot, const QColor &color)
+{
+    QCPItemTracer *tracer = new QCPItemTracer(plot);
+    tracer->setInterpolating(true);
+    tracer->setStyle(QCPItemTracer::tsCircle);
+    tracer->setPen(QPen(color, Config::LINE_WIDTH));
+    tracer->setBrush(color);
+    tracer->setSize(Config::TRACER_SIZE);
+    tracer->setVisible(false);
+    return tracer;
+}
+
+ObjectData DataMonitorWidget::generateFakeData(int objectId) const
 {
     ObjectData data;
-    const int numPoints = 100;
 
-    // Resize all dataPoints vectors
-    data.metricA.dataPoints.resize(numPoints);
-    data.metricB.dataPoints.resize(numPoints);
-    data.metricC.dataPoints.resize(numPoints);
+    // Pre-allocate vectors
+    data.metricA.dataPoints.resize(Config::NUM_DATA_POINTS);
+    data.metricB.dataPoints.resize(Config::NUM_DATA_POINTS);
+    data.metricC.dataPoints.resize(Config::NUM_DATA_POINTS);
 
-    // Use objectId as seed for variation
-    double metricABase = 20.0 + (objectId % 10) * 2.0;
-    double metricBBase = 50.0 + (objectId % 10) * 3.0;
-    double metricCBase = 1013.0 + (objectId % 10) * 5.0;
+    // Base values vary by object ID
+    const double metricABase = 20.0 + (objectId % 10) * 2.0;
+    const double metricBBase = 50.0 + (objectId % 10) * 3.0;
+    const double metricCBase = 1013.0 + (objectId % 10) * 5.0;
 
-    for (int i = 0; i < numPoints; ++i)
-    {
-        double timeValue = i;
+    for (int i = 0; i < Config::NUM_DATA_POINTS; ++i) {
+        const double time = static_cast<double>(i);
+        const double noise = QRandomGenerator::global()->bounded(100) / 100.0 - 0.5;
 
-        // Create Metric A data point
+        // Generate Metric A data
         DataPoint pointA;
-        pointA.time = timeValue;
-        pointA.series1Value = metricABase + 5.0 * qSin(i * 0.1 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        pointA.series2Value = metricABase + 3.0 + 6.0 * qSin(i * 0.12 + objectId + 1.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        pointA.series3Value = metricABase - 2.0 + 4.0 * qSin(i * 0.08 + objectId + 2.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        pointA.time = time;
+        pointA.series1Value = metricABase + 5.0 * qSin(i * 0.1 + objectId) + noise;
+        pointA.series2Value = metricABase + 3.0 + 6.0 * qSin(i * 0.12 + objectId + 1.0) + noise;
+        pointA.series3Value = metricABase - 2.0 + 4.0 * qSin(i * 0.08 + objectId + 2.0) + noise;
         data.metricA.dataPoints[i] = pointA;
 
-        // Create Metric B data point
+        // Generate Metric B data
         DataPoint pointB;
-        pointB.time = timeValue;
-        pointB.series1Value = metricBBase + 10.0 * qCos(i * 0.15 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        pointB.series2Value = metricBBase + 5.0 + 8.0 * qCos(i * 0.18 + objectId + 1.5) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        pointB.series3Value = metricBBase - 3.0 + 12.0 * qCos(i * 0.12 + objectId + 2.5) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        pointB.time = time;
+        pointB.series1Value = metricBBase + 10.0 * qCos(i * 0.15 + objectId) + noise;
+        pointB.series2Value = metricBBase + 5.0 + 8.0 * qCos(i * 0.18 + objectId + 1.5) + noise;
+        pointB.series3Value = metricBBase - 3.0 + 12.0 * qCos(i * 0.12 + objectId + 2.5) + noise;
         data.metricB.dataPoints[i] = pointB;
 
-        // Create Metric C data point
+        // Generate Metric C data
         DataPoint pointC;
-        pointC.time = timeValue;
-        pointC.series1Value = metricCBase + 8.0 * qSin(i * 0.05 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        pointC.series2Value = metricCBase + 10.0 + 6.0 * qSin(i * 0.06 + objectId + 1.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
-        pointC.series3Value = metricCBase - 5.0 + 7.0 * qSin(i * 0.04 + objectId + 2.0) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
+        pointC.time = time;
+        pointC.series1Value = metricCBase + 8.0 * qSin(i * 0.05 + objectId) + noise;
+        pointC.series2Value = metricCBase + 10.0 + 6.0 * qSin(i * 0.06 + objectId + 1.0) + noise;
+        pointC.series3Value = metricCBase - 5.0 + 7.0 * qSin(i * 0.04 + objectId + 2.0) + noise;
         data.metricC.dataPoints[i] = pointC;
     }
 
@@ -179,15 +169,14 @@ ObjectData DataMonitorWidget::generateFakeData(int objectId)
 
 void DataMonitorWidget::updatePlot(QCustomPlot *plot, const TimeSeriesData &data)
 {
-    // Extract data from DataPoints into separate vectors for QCustomPlot
-    int numPoints = data.dataPoints.size();
+    const int numPoints = data.dataPoints.size();
     QVector<double> time(numPoints);
     QVector<double> series1(numPoints);
     QVector<double> series2(numPoints);
     QVector<double> series3(numPoints);
 
-    for (int i = 0; i < numPoints; ++i)
-    {
+    // Extract data into separate vectors
+    for (int i = 0; i < numPoints; ++i) {
         const DataPoint &point = data.dataPoints[i];
         time[i] = point.time;
         series1[i] = point.series1Value;
@@ -195,7 +184,7 @@ void DataMonitorWidget::updatePlot(QCustomPlot *plot, const TimeSeriesData &data
         series3[i] = point.series3Value;
     }
 
-    // Update all 3 series
+    // Update graphs
     plot->graph(0)->setData(time, series1);
     plot->graph(1)->setData(time, series2);
     plot->graph(2)->setData(time, series3);
@@ -203,93 +192,44 @@ void DataMonitorWidget::updatePlot(QCustomPlot *plot, const TimeSeriesData &data
     // Update axis ranges
     plot->xAxis->setRange(0, numPoints);
     plot->yAxis->rescale();
-
-    // Replot
     plot->replot();
 }
 
 void DataMonitorWidget::updateGraphs(int objectId)
 {
-    // Generate fake data for the selected object
-    ObjectData data = generateFakeData(objectId);
+    const ObjectData data = generateFakeData(objectId);
 
-    // Update all plots using the structured data
-    updatePlot(plotTemperature, data.metricA);
-    updatePlot(plotHumidity, data.metricB);
-    updatePlot(plotPressure, data.metricC);
-}
-
-void DataMonitorWidget::setupCallouts(QCustomPlot *plot, PlotCallout &callout)
-{
-    // Create tracers for each series (don't set graph yet - wait for data)
-    callout.tracer1 = new QCPItemTracer(plot);
-    callout.tracer1->setInterpolating(true);
-    callout.tracer1->setStyle(QCPItemTracer::tsCircle);
-    callout.tracer1->setPen(QPen(Qt::green, 2));
-    callout.tracer1->setBrush(Qt::green);
-    callout.tracer1->setSize(8);
-    callout.tracer1->setVisible(false);
-
-    callout.tracer2 = new QCPItemTracer(plot);
-    callout.tracer2->setInterpolating(true);
-    callout.tracer2->setStyle(QCPItemTracer::tsCircle);
-    callout.tracer2->setPen(QPen(Qt::yellow, 2));
-    callout.tracer2->setBrush(Qt::yellow);
-    callout.tracer2->setSize(8);
-    callout.tracer2->setVisible(false);
-
-    callout.tracer3 = new QCPItemTracer(plot);
-    callout.tracer3->setInterpolating(true);
-    callout.tracer3->setStyle(QCPItemTracer::tsCircle);
-    callout.tracer3->setPen(QPen(Qt::red, 2));
-    callout.tracer3->setBrush(Qt::red);
-    callout.tracer3->setSize(8);
-    callout.tracer3->setVisible(false);
-
-    // Create text label for callout
-    callout.textLabel = new QCPItemText(plot);
-    callout.textLabel->setPositionAlignment(Qt::AlignTop|Qt::AlignHCenter);
-    callout.textLabel->position->setType(QCPItemPosition::ptPlotCoords);
-    callout.textLabel->setFont(QFont(font().family(), 10));
-    callout.textLabel->setPen(QPen(Qt::black));
-    callout.textLabel->setBrush(QBrush(QColor(255, 255, 255, 200)));
-    callout.textLabel->setPadding(QMargins(5, 5, 5, 5));
-    callout.textLabel->setVisible(false);
+    updatePlot(plotMetricA, data.metricA);
+    updatePlot(plotMetricB, data.metricB);
+    updatePlot(plotMetricC, data.metricC);
 }
 
 void DataMonitorWidget::showCallout(QCustomPlot *plot, PlotCallout &callout, double xCoord)
 {
-    // Set graph associations if not already set (now that data is loaded)
-    if (!callout.tracer1->graph()) {
-        callout.tracer1->setGraph(plot->graph(0));
-        callout.tracer2->setGraph(plot->graph(1));
-        callout.tracer3->setGraph(plot->graph(2));
+    // Lazy initialization: associate tracers with graphs on first use
+    if (!callout.tracers[0]->graph()) {
+        for (int i = 0; i < Config::NUM_SERIES; ++i) {
+            callout.tracers[i]->setGraph(plot->graph(i));
+        }
     }
 
-    // Update tracer positions
-    callout.tracer1->setGraphKey(xCoord);
-    callout.tracer2->setGraphKey(xCoord);
-    callout.tracer3->setGraphKey(xCoord);
+    // Position tracers and get values
+    double values[Config::NUM_SERIES];
+    for (int i = 0; i < Config::NUM_SERIES; ++i) {
+        callout.tracers[i]->setGraphKey(xCoord);
+        values[i] = callout.tracers[i]->position->value();
+        callout.tracers[i]->setVisible(true);
+    }
 
-    // Get values at this position
-    double value1 = callout.tracer1->position->value();
-    double value2 = callout.tracer2->position->value();
-    double value3 = callout.tracer3->position->value();
-
-    // Format text to show all 3 values
+    // Format callout text
     QString text = QString("Time: %1\nSeries 1: %2\nSeries 2: %3\nSeries 3: %4")
                        .arg(xCoord, 0, 'f', 1)
-                       .arg(value1, 0, 'f', 2)
-                       .arg(value2, 0, 'f', 2)
-                       .arg(value3, 0, 'f', 2);
+                       .arg(values[0], 0, 'f', 2)
+                       .arg(values[1], 0, 'f', 2)
+                       .arg(values[2], 0, 'f', 2);
 
     callout.textLabel->setText(text);
-    callout.textLabel->position->setCoords(xCoord, value2); // Position at middle series
-
-    // Make everything visible
-    callout.tracer1->setVisible(true);
-    callout.tracer2->setVisible(true);
-    callout.tracer3->setVisible(true);
+    callout.textLabel->position->setCoords(xCoord, values[1]);  // Position at middle series
     callout.textLabel->setVisible(true);
 
     plot->replot();
@@ -300,16 +240,15 @@ void DataMonitorWidget::onPlotClicked(QMouseEvent *event)
     QCustomPlot *plot = qobject_cast<QCustomPlot*>(sender());
     if (!plot) return;
 
-    // Get x coordinate from mouse position
-    double xCoord = plot->xAxis->pixelToCoord(event->pos().x());
+    const double xCoord = plot->xAxis->pixelToCoord(event->pos().x());
 
-    // Determine which plot was clicked and show its callout
-    if (plot == plotTemperature) {
-        showCallout(plotTemperature, calloutTemperature, xCoord);
-    } else if (plot == plotHumidity) {
-        showCallout(plotHumidity, calloutHumidity, xCoord);
-    } else if (plot == plotPressure) {
-        showCallout(plotPressure, calloutPressure, xCoord);
+    // Show callout on the clicked plot
+    if (plot == plotMetricA) {
+        showCallout(plotMetricA, calloutMetricA, xCoord);
+    } else if (plot == plotMetricB) {
+        showCallout(plotMetricB, calloutMetricB, xCoord);
+    } else if (plot == plotMetricC) {
+        showCallout(plotMetricC, calloutMetricC, xCoord);
     }
 }
 
