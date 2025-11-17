@@ -70,15 +70,12 @@ void MainWindow::setupPlots()
     // Setup Temperature Plot with 3 series
     plotTemperature->addGraph(); // Series 1 - Green
     plotTemperature->graph(0)->setPen(QPen(Qt::green, 2));
-    plotTemperature->graph(0)->setBrush(QBrush(QColor(0, 255, 0, 20)));
 
     plotTemperature->addGraph(); // Series 2 - Yellow
     plotTemperature->graph(1)->setPen(QPen(Qt::yellow, 2));
-    plotTemperature->graph(1)->setBrush(QBrush(QColor(255, 255, 0, 20)));
 
     plotTemperature->addGraph(); // Series 3 - Red
     plotTemperature->graph(2)->setPen(QPen(Qt::red, 2));
-    plotTemperature->graph(2)->setBrush(QBrush(QColor(255, 0, 0, 20)));
 
     plotTemperature->xAxis->setLabel("Time (seconds)");
     plotTemperature->yAxis->setLabel("Temperature (°C)");
@@ -87,15 +84,12 @@ void MainWindow::setupPlots()
     // Setup Humidity Plot with 3 series
     plotHumidity->addGraph(); // Series 1 - Green
     plotHumidity->graph(0)->setPen(QPen(Qt::green, 2));
-    plotHumidity->graph(0)->setBrush(QBrush(QColor(0, 255, 0, 20)));
 
     plotHumidity->addGraph(); // Series 2 - Yellow
     plotHumidity->graph(1)->setPen(QPen(Qt::yellow, 2));
-    plotHumidity->graph(1)->setBrush(QBrush(QColor(255, 255, 0, 20)));
 
     plotHumidity->addGraph(); // Series 3 - Red
     plotHumidity->graph(2)->setPen(QPen(Qt::red, 2));
-    plotHumidity->graph(2)->setBrush(QBrush(QColor(255, 0, 0, 20)));
 
     plotHumidity->xAxis->setLabel("Time (seconds)");
     plotHumidity->yAxis->setLabel("Humidity (%)");
@@ -104,15 +98,12 @@ void MainWindow::setupPlots()
     // Setup Pressure Plot with 3 series
     plotPressure->addGraph(); // Series 1 - Green
     plotPressure->graph(0)->setPen(QPen(Qt::green, 2));
-    plotPressure->graph(0)->setBrush(QBrush(QColor(0, 255, 0, 20)));
 
     plotPressure->addGraph(); // Series 2 - Yellow
     plotPressure->graph(1)->setPen(QPen(Qt::yellow, 2));
-    plotPressure->graph(1)->setBrush(QBrush(QColor(255, 255, 0, 20)));
 
     plotPressure->addGraph(); // Series 3 - Red
     plotPressure->graph(2)->setPen(QPen(Qt::red, 2));
-    plotPressure->graph(2)->setBrush(QBrush(QColor(255, 0, 0, 20)));
 
     plotPressure->xAxis->setLabel("Time (seconds)");
     plotPressure->yAxis->setLabel("Pressure (hPa)");
