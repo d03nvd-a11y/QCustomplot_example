@@ -9,7 +9,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
-    setWindowTitle("Multi-Object Time Series Monitor");
+    setWindowTitle("Multi-Series Data Monitor");
     resize(1200, 900);
 
     setupUI();
@@ -77,8 +77,8 @@ void MainWindow::setupPlots()
     plotTemperature->addGraph(); // Series 3 - Red
     plotTemperature->graph(2)->setPen(QPen(Qt::red, 2));
 
-    plotTemperature->xAxis->setLabel("Time (seconds)");
-    plotTemperature->yAxis->setLabel("Temperature (°C)");
+    plotTemperature->xAxis->setLabel("Time");
+    plotTemperature->yAxis->setLabel("Metric A");
     plotTemperature->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 
     // Setup Humidity Plot with 3 series
@@ -91,8 +91,8 @@ void MainWindow::setupPlots()
     plotHumidity->addGraph(); // Series 3 - Red
     plotHumidity->graph(2)->setPen(QPen(Qt::red, 2));
 
-    plotHumidity->xAxis->setLabel("Time (seconds)");
-    plotHumidity->yAxis->setLabel("Humidity (%)");
+    plotHumidity->xAxis->setLabel("Time");
+    plotHumidity->yAxis->setLabel("Metric B");
     plotHumidity->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 
     // Setup Pressure Plot with 3 series
@@ -105,8 +105,8 @@ void MainWindow::setupPlots()
     plotPressure->addGraph(); // Series 3 - Red
     plotPressure->graph(2)->setPen(QPen(Qt::red, 2));
 
-    plotPressure->xAxis->setLabel("Time (seconds)");
-    plotPressure->yAxis->setLabel("Pressure (hPa)");
+    plotPressure->xAxis->setLabel("Time");
+    plotPressure->yAxis->setLabel("Metric C");
     plotPressure->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 }
 
