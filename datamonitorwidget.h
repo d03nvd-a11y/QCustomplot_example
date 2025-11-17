@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef DATAMONITORWIDGET_H
+#define DATAMONITORWIDGET_H
 
 #include <QWidget>
 #include <QSpinBox>
@@ -24,13 +24,13 @@ struct ObjectData {
     TimeSeriesData metricC;
 };
 
-class MainWindow : public QWidget
+class DataMonitorWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    explicit DataMonitorWidget(QWidget *parent = nullptr);
+    ~DataMonitorWidget();
 
 private slots:
     void onObjectIdChanged(int objectId);
@@ -68,4 +68,4 @@ private:
     void showCallout(QCustomPlot *plot, PlotCallout &callout, double xCoord);
 };
 
-#endif // MAINWINDOW_H
+#endif // DATAMONITORWIDGET_H

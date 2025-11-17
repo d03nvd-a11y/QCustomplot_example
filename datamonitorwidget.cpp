@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "datamonitorwidget.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGroupBox>
@@ -6,12 +6,9 @@
 #include <QDateTime>
 #include <QRandomGenerator>
 
-MainWindow::MainWindow(QWidget *parent)
+DataMonitorWidget::DataMonitorWidget(QWidget *parent)
     : QWidget(parent)
 {
-    setWindowTitle("Multi-Series Data Monitor");
-    resize(1200, 900);
-
     setupUI();
     setupPlots();
 
@@ -19,11 +16,11 @@ MainWindow::MainWindow(QWidget *parent)
     updateGraphs(1);
 }
 
-MainWindow::~MainWindow()
+DataMonitorWidget::~DataMonitorWidget()
 {
 }
 
-void MainWindow::setupUI()
+void DataMonitorWidget::setupUI()
 {
     // Main layout
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -62,10 +59,10 @@ void MainWindow::setupUI()
 
     // Connect spinbox signal
     connect(objectIdSpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-            this, &MainWindow::onObjectIdChanged);
+            this, &DataMonitorWidget::onObjectIdChanged);
 }
 
-void MainWindow::setupPlots()
+void DataMonitorWidget::setupPlots()
 {
     // Setup Temperature Plot with 3 series
     plotTemperature->addGraph(); // Series 1 - Green
@@ -85,7 +82,7 @@ void MainWindow::setupPlots()
     plotTemperature->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     plotTemperature->legend->setVisible(true);
     plotTemperature->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
-    connect(plotTemperature, &QCustomPlot::mousePress, this, &MainWindow::onPlotClicked);
+    connect(plotTemperature, &QCustomPlot::mousePress, this, &DataMonitorWidget::onPlotClicked);
 
     // Setup Humidity Plot with 3 series
     plotHumidity->addGraph(); // Series 1 - Green
@@ -105,7 +102,7 @@ void MainWindow::setupPlots()
     plotHumidity->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     plotHumidity->legend->setVisible(true);
     plotHumidity->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
-    connect(plotHumidity, &QCustomPlot::mousePress, this, &MainWindow::onPlotClicked);
+    connect(plotHumidity, &QCustomPlot::mousePress, this, &DataMonitorWidget::onPlotClicked);
 
     // Setup Pressure Plot with 3 series
     plotPressure->addGraph(); // Series 1 - Green
@@ -125,7 +122,7 @@ void MainWindow::setupPlots()
     plotPressure->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     plotPressure->legend->setVisible(true);
     plotPressure->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
-    connect(plotPressure, &QCustomPlot::mousePress, this, &MainWindow::onPlotClicked);
+    connect(plotPressure, &QCustomPlot::mousePress, this, &DataMonitorWidget::onPlotClicked);
 
     // Setup callouts for all plots
     setupCallouts(plotTemperature, calloutTemperature);
@@ -133,7 +130,7 @@ void MainWindow::setupPlots()
     setupCallouts(plotPressure, calloutPressure);
 }
 
-ObjectData MainWindow::generateFakeData(int objectId)
+ObjectData DataMonitorWidget::generateFakeData(int objectId)
 {
     ObjectData data;
     const int numPoints = 100;
@@ -180,7 +177,7 @@ ObjectData MainWindow::generateFakeData(int objectId)
     return data;
 }
 
-void MainWindow::updatePlot(QCustomPlot *plot, const TimeSeriesData &data)
+void DataMonitorWidget::updatePlot(QCustomPlot *plot, const TimeSeriesData &data)
 {
     // Extract data from DataPoints into separate vectors for QCustomPlot
     int numPoints = data.dataPoints.size();
@@ -211,7 +208,7 @@ void MainWindow::updatePlot(QCustomPlot *plot, const TimeSeriesData &data)
     plot->replot();
 }
 
-void MainWindow::updateGraphs(int objectId)
+void DataMonitorWidget::updateGraphs(int objectId)
 {
     // Generate fake data for the selected object
     ObjectData data = generateFakeData(objectId);
@@ -222,7 +219,7 @@ void MainWindow::updateGraphs(int objectId)
     updatePlot(plotPressure, data.metricC);
 }
 
-void MainWindow::setupCallouts(QCustomPlot *plot, PlotCallout &callout)
+void DataMonitorWidget::setupCallouts(QCustomPlot *plot, PlotCallout &callout)
 {
     // Create tracers for each series (don't set graph yet - wait for data)
     callout.tracer1 = new QCPItemTracer(plot);
@@ -260,7 +257,7 @@ void MainWindow::setupCallouts(QCustomPlot *plot, PlotCallout &callout)
     callout.textLabel->setVisible(false);
 }
 
-void MainWindow::showCallout(QCustomPlot *plot, PlotCallout &callout, double xCoord)
+void DataMonitorWidget::showCallout(QCustomPlot *plot, PlotCallout &callout, double xCoord)
 {
     // Set graph associations if not already set (now that data is loaded)
     if (!callout.tracer1->graph()) {
@@ -298,7 +295,7 @@ void MainWindow::showCallout(QCustomPlot *plot, PlotCallout &callout, double xCo
     plot->replot();
 }
 
-void MainWindow::onPlotClicked(QMouseEvent *event)
+void DataMonitorWidget::onPlotClicked(QMouseEvent *event)
 {
     QCustomPlot *plot = qobject_cast<QCustomPlot*>(sender());
     if (!plot) return;
@@ -316,7 +313,7 @@ void MainWindow::onPlotClicked(QMouseEvent *event)
     }
 }
 
-void MainWindow::onObjectIdChanged(int objectId)
+void DataMonitorWidget::onObjectIdChanged(int objectId)
 {
     updateGraphs(objectId);
 }

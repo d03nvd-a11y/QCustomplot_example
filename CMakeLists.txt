@@ -13,8 +13,8 @@ find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport REQUIRED)
 
 set(PROJECT_SOURCES
     main.cpp
-    mainwindow.cpp
-    mainwindow.h
+    datamonitorwidget.cpp
+    datamonitorwidget.h
     qcustomplot.cpp
     qcustomplot.h
 )
