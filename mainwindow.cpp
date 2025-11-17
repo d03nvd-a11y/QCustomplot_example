@@ -224,9 +224,8 @@ void MainWindow::updateGraphs(int objectId)
 
 void MainWindow::setupCallouts(QCustomPlot *plot, PlotCallout &callout)
 {
-    // Create tracers for each series
+    // Create tracers for each series (don't set graph yet - wait for data)
     callout.tracer1 = new QCPItemTracer(plot);
-    callout.tracer1->setGraph(plot->graph(0));
     callout.tracer1->setInterpolating(true);
     callout.tracer1->setStyle(QCPItemTracer::tsCircle);
     callout.tracer1->setPen(QPen(Qt::green, 2));
@@ -235,7 +234,6 @@ void MainWindow::setupCallouts(QCustomPlot *plot, PlotCallout &callout)
     callout.tracer1->setVisible(false);
 
     callout.tracer2 = new QCPItemTracer(plot);
-    callout.tracer2->setGraph(plot->graph(1));
     callout.tracer2->setInterpolating(true);
     callout.tracer2->setStyle(QCPItemTracer::tsCircle);
     callout.tracer2->setPen(QPen(Qt::yellow, 2));
@@ -244,7 +242,6 @@ void MainWindow::setupCallouts(QCustomPlot *plot, PlotCallout &callout)
     callout.tracer2->setVisible(false);
 
     callout.tracer3 = new QCPItemTracer(plot);
-    callout.tracer3->setGraph(plot->graph(2));
     callout.tracer3->setInterpolating(true);
     callout.tracer3->setStyle(QCPItemTracer::tsCircle);
     callout.tracer3->setPen(QPen(Qt::red, 2));
@@ -265,6 +262,13 @@ void MainWindow::setupCallouts(QCustomPlot *plot, PlotCallout &callout)
 
 void MainWindow::showCallout(QCustomPlot *plot, PlotCallout &callout, double xCoord)
 {
+    // Set graph associations if not already set (now that data is loaded)
+    if (!callout.tracer1->graph()) {
+        callout.tracer1->setGraph(plot->graph(0));
+        callout.tracer2->setGraph(plot->graph(1));
+        callout.tracer3->setGraph(plot->graph(2));
+    }
+
     // Update tracer positions
     callout.tracer1->setGraphKey(xCoord);
     callout.tracer2->setGraphKey(xCoord);
