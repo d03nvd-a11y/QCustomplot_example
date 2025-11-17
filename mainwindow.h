@@ -34,6 +34,7 @@ public:
 
 private slots:
     void onObjectIdChanged(int objectId);
+    void onPlotClicked(QMouseEvent *event);
 
 private:
     // UI Components
@@ -43,6 +44,18 @@ private:
     QCustomPlot *plotHumidity;
     QCustomPlot *plotPressure;
 
+    // Callout components for each plot
+    struct PlotCallout {
+        QCPItemTracer *tracer1;
+        QCPItemTracer *tracer2;
+        QCPItemTracer *tracer3;
+        QCPItemText *textLabel;
+    };
+
+    PlotCallout calloutTemperature;
+    PlotCallout calloutHumidity;
+    PlotCallout calloutPressure;
+
     // Data generation
     ObjectData generateFakeData(int objectId);
     void updatePlot(QCustomPlot *plot, const TimeSeriesData &data);
@@ -50,7 +63,9 @@ private:
     // Setup methods
     void setupUI();
     void setupPlots();
+    void setupCallouts(QCustomPlot *plot, PlotCallout &callout);
     void updateGraphs(int objectId);
+    void showCallout(QCustomPlot *plot, PlotCallout &callout, double xCoord);
 };
 
 #endif // MAINWINDOW_H
