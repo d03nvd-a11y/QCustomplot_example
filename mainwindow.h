@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QWidget>
+#include <QSpinBox>
+#include <QLabel>
 #include "qcustomplot.h"
 
 class MainWindow : public QWidget
@@ -12,9 +14,27 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void onObjectIdChanged(int objectId);
+
 private:
-    QCustomPlot *customPlot;
-    void setupPlot();
+    // UI Components
+    QSpinBox *objectIdSpinBox;
+    QLabel *objectIdLabel;
+    QCustomPlot *plotTemperature;
+    QCustomPlot *plotHumidity;
+    QCustomPlot *plotPressure;
+
+    // Data generation
+    void generateFakeData(int objectId, QVector<double> &time,
+                         QVector<double> &temperature,
+                         QVector<double> &humidity,
+                         QVector<double> &pressure);
+
+    // Setup methods
+    void setupUI();
+    void setupPlots();
+    void updateGraphs(int objectId);
 };
 
 #endif // MAINWINDOW_H
