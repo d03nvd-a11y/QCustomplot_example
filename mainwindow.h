@@ -27,9 +27,9 @@ private:
 
     // Data generation
     void generateFakeData(int objectId, QVector<double> &time,
-                         QVector<double> &temperature,
-                         QVector<double> &humidity,
-                         QVector<double> &pressure);
+                         QVector<double> &temp1, QVector<double> &temp2, QVector<double> &temp3,
+                         QVector<double> &hum1, QVector<double> &hum2, QVector<double> &hum3,
+                         QVector<double> &press1, QVector<double> &press2, QVector<double> &press3);
 
     // Setup methods
     void setupUI();
