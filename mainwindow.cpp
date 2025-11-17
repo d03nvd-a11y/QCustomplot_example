@@ -82,7 +82,7 @@ void MainWindow::setupPlots()
 
     plotTemperature->xAxis->setLabel("Time");
     plotTemperature->yAxis->setLabel("Metric A");
-    plotTemperature->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    plotTemperature->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     plotTemperature->legend->setVisible(true);
     plotTemperature->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
     connect(plotTemperature, &QCustomPlot::mousePress, this, &MainWindow::onPlotClicked);
@@ -102,7 +102,7 @@ void MainWindow::setupPlots()
 
     plotHumidity->xAxis->setLabel("Time");
     plotHumidity->yAxis->setLabel("Metric B");
-    plotHumidity->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    plotHumidity->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     plotHumidity->legend->setVisible(true);
     plotHumidity->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
     connect(plotHumidity, &QCustomPlot::mousePress, this, &MainWindow::onPlotClicked);
@@ -122,7 +122,7 @@ void MainWindow::setupPlots()
 
     plotPressure->xAxis->setLabel("Time");
     plotPressure->yAxis->setLabel("Metric C");
-    plotPressure->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    plotPressure->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     plotPressure->legend->setVisible(true);
     plotPressure->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
     connect(plotPressure, &QCustomPlot::mousePress, this, &MainWindow::onPlotClicked);
