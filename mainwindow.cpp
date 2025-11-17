@@ -4,6 +4,7 @@
 #include <QGroupBox>
 #include <QtMath>
 #include <QDateTime>
+#include <QRandomGenerator>
 
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
@@ -72,8 +73,6 @@ void MainWindow::setupPlots()
     plotTemperature->graph(0)->setBrush(QBrush(QColor(255, 0, 0, 20)));
     plotTemperature->xAxis->setLabel("Time (seconds)");
     plotTemperature->yAxis->setLabel("Temperature (°C)");
-    plotTemperature->plotLayout()->insertRow(0);
-    plotTemperature->plotLayout()->addElement(0, 0, new QCPTextElement(plotTemperature, "Temperature Over Time", QFont("sans", 12, QFont::Bold)));
     plotTemperature->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 
     // Setup Humidity Plot
@@ -82,8 +81,6 @@ void MainWindow::setupPlots()
     plotHumidity->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 20)));
     plotHumidity->xAxis->setLabel("Time (seconds)");
     plotHumidity->yAxis->setLabel("Humidity (%)");
-    plotHumidity->plotLayout()->insertRow(0);
-    plotHumidity->plotLayout()->addElement(0, 0, new QCPTextElement(plotHumidity, "Humidity Over Time", QFont("sans", 12, QFont::Bold)));
     plotHumidity->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 
     // Setup Pressure Plot
@@ -92,8 +89,6 @@ void MainWindow::setupPlots()
     plotPressure->graph(0)->setBrush(QBrush(QColor(0, 255, 0, 20)));
     plotPressure->xAxis->setLabel("Time (seconds)");
     plotPressure->yAxis->setLabel("Pressure (hPa)");
-    plotPressure->plotLayout()->insertRow(0);
-    plotPressure->plotLayout()->addElement(0, 0, new QCPTextElement(plotPressure, "Pressure Over Time", QFont("sans", 12, QFont::Bold)));
     plotPressure->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 }
 
@@ -118,13 +113,13 @@ void MainWindow::generateFakeData(int objectId, QVector<double> &time,
         time[i] = i;
 
         // Generate temperature with sinusoidal pattern + noise
-        temperature[i] = tempBase + 5.0 * qSin(i * 0.1 + objectId) + (qrand() % 100) / 100.0 - 0.5;
+        temperature[i] = tempBase + 5.0 * qSin(i * 0.1 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
 
         // Generate humidity with different frequency pattern
-        humidity[i] = humidBase + 10.0 * qCos(i * 0.15 + objectId) + (qrand() % 100) / 100.0 - 0.5;
+        humidity[i] = humidBase + 10.0 * qCos(i * 0.15 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
 
         // Generate pressure with slow variation
-        pressure[i] = pressBase + 8.0 * qSin(i * 0.05 + objectId) + (qrand() % 100) / 100.0 - 0.5;
+        pressure[i] = pressBase + 8.0 * qSin(i * 0.05 + objectId) + (QRandomGenerator::global()->bounded(100)) / 100.0 - 0.5;
     }
 }
 
