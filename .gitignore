@@ -1,0 +1,30 @@
+# Build directories
+build/
+cmake-build-*/
+
+# Qt Creator files
+*.user
+*.autosave
+
+# Compiled Object files
+*.o
+*.obj
+
+# Executables
+*.exe
+*.out
+*.app
+QCustomPlotExample
+
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
