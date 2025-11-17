@@ -70,44 +70,59 @@ void MainWindow::setupPlots()
     // Setup Temperature Plot with 3 series
     plotTemperature->addGraph(); // Series 1 - Green
     plotTemperature->graph(0)->setPen(QPen(Qt::green, 2));
+    plotTemperature->graph(0)->setName("Series 1 (Unit A)");
 
     plotTemperature->addGraph(); // Series 2 - Yellow
     plotTemperature->graph(1)->setPen(QPen(Qt::yellow, 2));
+    plotTemperature->graph(1)->setName("Series 2 (Unit B)");
 
     plotTemperature->addGraph(); // Series 3 - Red
     plotTemperature->graph(2)->setPen(QPen(Qt::red, 2));
+    plotTemperature->graph(2)->setName("Series 3 (Unit C)");
 
     plotTemperature->xAxis->setLabel("Time");
     plotTemperature->yAxis->setLabel("Metric A");
     plotTemperature->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    plotTemperature->legend->setVisible(true);
+    plotTemperature->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
 
     // Setup Humidity Plot with 3 series
     plotHumidity->addGraph(); // Series 1 - Green
     plotHumidity->graph(0)->setPen(QPen(Qt::green, 2));
+    plotHumidity->graph(0)->setName("Series 1 (Unit D)");
 
     plotHumidity->addGraph(); // Series 2 - Yellow
     plotHumidity->graph(1)->setPen(QPen(Qt::yellow, 2));
+    plotHumidity->graph(1)->setName("Series 2 (Unit E)");
 
     plotHumidity->addGraph(); // Series 3 - Red
     plotHumidity->graph(2)->setPen(QPen(Qt::red, 2));
+    plotHumidity->graph(2)->setName("Series 3 (Unit F)");
 
     plotHumidity->xAxis->setLabel("Time");
     plotHumidity->yAxis->setLabel("Metric B");
     plotHumidity->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    plotHumidity->legend->setVisible(true);
+    plotHumidity->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
 
     // Setup Pressure Plot with 3 series
     plotPressure->addGraph(); // Series 1 - Green
     plotPressure->graph(0)->setPen(QPen(Qt::green, 2));
+    plotPressure->graph(0)->setName("Series 1 (Unit G)");
 
     plotPressure->addGraph(); // Series 2 - Yellow
     plotPressure->graph(1)->setPen(QPen(Qt::yellow, 2));
+    plotPressure->graph(1)->setName("Series 2 (Unit H)");
 
     plotPressure->addGraph(); // Series 3 - Red
     plotPressure->graph(2)->setPen(QPen(Qt::red, 2));
+    plotPressure->graph(2)->setName("Series 3 (Unit I)");
 
     plotPressure->xAxis->setLabel("Time");
     plotPressure->yAxis->setLabel("Metric C");
     plotPressure->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    plotPressure->legend->setVisible(true);
+    plotPressure->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
 }
 
 void MainWindow::generateFakeData(int objectId, QVector<double> &time,
